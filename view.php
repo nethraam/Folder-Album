@@ -81,10 +81,13 @@ function find_photos($folder){
 					$orientation = 'vertical';
 				
 				echo "<div class='thumb_container'>";
-					if (file_exists ( "$folder/thumbs/$photo" ))
+					if (file_exists ( WB_PATH."$folder/thumbs/$photo" ))
 						echo "<div class='thumb $orientation'> <a data-fancybox='gallery'  href='".WB_URL."$folder/$photo'> <img src='".WB_URL."$folder/thumbs/$photo' alt='$photo' /> </a> </div>\n";
-					else	
+					else{	
 						echo "<div class='thumb $orientation'> <a data-fancybox='gallery'  href='".WB_URL."$folder/$photo'><img src='".WB_URL."$folder/$photo' alt='$photo' /> </a> </div>\n";				
+						$image_url = WB_PATH."$folder/$photo";
+						create_thumb($image_url);
+					}
 				
 					
 				echo "<div class='thumb_text_container'>";
@@ -106,51 +109,76 @@ function find_subfolders($folder){
 		
 		$subfolder_name = end(explode('/', $subfolder));
 		
-		if(isset($_GET['subfolder']))
-			$subfolder_url =$_GET['subfolder']."/".end(explode('/', $subfolder));
-		else
-			$subfolder_url = end(explode('/', $subfolder));
-	
-		$firstFile = scandir($subfolder)[2];
-		$secondfile = scandir($subfolder)[3];
-		$thirdfile = scandir($subfolder)[4];
+		if($subfolder_name != 'thumbs'){
+			if(isset($_GET['subfolder']))
+				$subfolder_url =$_GET['subfolder']."/".end(explode('/', $subfolder));
+			else
+				$subfolder_url = end(explode('/', $subfolder));
 		
-
-		if (substr($firstFile, -4)=='.jpg'|| substr($firstFile, -5)=='.jpeg' || substr($firstFile, -4)=='.JPG' || substr($firstFile, -4)=='.png'){
-			echo "<div class='folder_container'>";
+			$firstFile = scandir($subfolder)[2];
+			$secondfile = scandir($subfolder)[3];
+			$thirdfile = scandir($subfolder)[4];
 			
-			list($width, $height) = getimagesize(str_replace(" ", "%20", WB_URL."$folder/$subfolder_name/$firstFile"));
-				if ($width >= $height)
-					$orientation1 = 'horizontal';
-				else
-					$orientation1 = 'vertical';
-				
-			list($width, $height) = getimagesize(str_replace(" ", "%20", WB_URL."$folder/$subfolder_name/$secondfile"));
-				if ($width >= $height)
-					$orientation2 = 'horizontal';
-				else
-					$orientation2 = 'vertical';
-				
-			list($width, $height) = getimagesize(str_replace(" ", "%20", WB_URL."$folder/$subfolder_name/$thirdfile"));
-				if ($width >= $height)
-					$orientation3 = 'horizontal';
-				else
-					$orientation3 = 'vertical';
+			if($firstFile != '' && $secondfile != '' && $thirdfile != ''){
+
+				if (substr($firstFile, -4)=='.jpg'|| substr($firstFile, -5)=='.jpeg' || substr($firstFile, -4)=='.JPG' || substr($firstFile, -4)=='.png'){
+					echo "<div class='folder_container'>";
 					
-					if (file_exists ( "$subfolder_name/thumbs/$firstFile" ))
-						echo "<div class='thumb_folder $orientation'> <a href='$current_url'subfolder=$subfolder_url'> <img src='".WB_URL."$folder/$subfolder_name/thumbs/$firstFile' alt='' /> </a> </div>\n";
-					else{	
-						echo "<div class='thumb_folder $orientation1'> <a href='$current_url?subfolder=$subfolder_url'> <img src='".WB_URL."$folder/$subfolder_name/$firstFile' alt='' /> </a> </div>\n";
-						echo "<div class='thumb_folder thumb_folder2 $orientation2'> <a href='$current_url?subfolder=$subfolder_url'> <img src='".WB_URL."$folder/$subfolder_name/$secondfile' alt='' /> </a> </div>\n";
-						echo "<div class='thumb_folder thumb_folder3 $orientation3'> <a href='$current_url?subfolder=$subfolder_url'> <img src='".WB_URL."$folder/$subfolder_name/$thirdfile' alt='' /> </a> </div>\n";
-						echo "<div class='folder_icon folder_icon_front'> <a href='$current_url?subfolder=$subfolder_url'> <img src='".WB_URL."/modules/folder_album/img/folder_front.png' alt='' /> </a> </div>\n";
-						echo "<div class='folder_icon folder_icon_back'> <a href='$current_url?subfolder=$subfolder_url'> <img src='".WB_URL."/modules/folder_album/img/folder_back.png' alt='' /> </a> </div>\n";
-						echo "<div class='folder_icon_text'> <a href='$current_url?subfolder=$subfolder_url'>$subfolder_name</a></div>\n";
-					}
-			echo "</div>\n";
-		}
+					list($width, $height) = getimagesize(str_replace(" ", "%20", WB_URL."$folder/$subfolder_name/$firstFile"));
+						if ($width >= $height)
+							$orientation1 = 'horizontal';
+						else
+							$orientation1 = 'vertical';
+						
+					list($width, $height) = getimagesize(str_replace(" ", "%20", WB_URL."$folder/$subfolder_name/$secondfile"));
+						if ($width >= $height)
+							$orientation2 = 'horizontal';
+						else
+							$orientation2 = 'vertical';
+						
+					list($width, $height) = getimagesize(str_replace(" ", "%20", WB_URL."$folder/$subfolder_name/$thirdfile"));
+						if ($width >= $height)
+							$orientation3 = 'horizontal';
+						else
+							$orientation3 = 'vertical';
+							
+							if (file_exists ( "$subfolder_name/thumbs/$firstFile" ))
+								echo "<div class='thumb_folder $orientation'> <a href='$current_url'subfolder=$subfolder_url'> <img src='".WB_URL."$folder/$subfolder_name/thumbs/$firstFile' alt='' /> </a> </div>\n";
+							else{	
+								echo "<div class='thumb_folder $orientation1'> <a href='$current_url?subfolder=$subfolder_url'> <img src='".WB_URL."$folder/$subfolder_name/$firstFile' alt='' /> </a> </div>\n";
+								echo "<div class='thumb_folder thumb_folder2 $orientation2'> <a href='$current_url?subfolder=$subfolder_url'> <img src='".WB_URL."$folder/$subfolder_name/$secondfile' alt='' /> </a> </div>\n";
+								echo "<div class='thumb_folder thumb_folder3 $orientation3'> <a href='$current_url?subfolder=$subfolder_url'> <img src='".WB_URL."$folder/$subfolder_name/$thirdfile' alt='' /> </a> </div>\n";
+								echo "<div class='folder_icon folder_icon_front'> <a href='$current_url?subfolder=$subfolder_url'> <img src='".WB_URL."/modules/folder_album/img/folder_front.png' alt='' /> </a> </div>\n";
+								echo "<div class='folder_icon folder_icon_back'> <a href='$current_url?subfolder=$subfolder_url'> <img src='".WB_URL."/modules/folder_album/img/folder_back.png' alt='' /> </a> </div>\n";
+								echo "<div class='folder_icon_text'> <a href='$current_url?subfolder=$subfolder_url'>$subfolder_name</a></div>\n";
+							}
+					echo "</div>\n";
+				}
+			}	
+		}	
 	}
 }
+function create_thumb($image){
+	
+	$directory = dirname($image);
+	
+	$directoryName = 'thumbs';
+
+	/* Check if the directory already exists. */
+	if(!is_dir($directory.'/'.$directoryName)){
+		/* Directory does not exist, so lets create it. */
+		mkdir($directory.'/'.$directoryName, 0755);
+	}
+	
+	
+	$im_php = imagecreatefromjpeg($image);
+	$im_php = imagescale($im_php, 300);
+	$new_height = imagesy($im_php);
+	$new_name = basename($image); 
+	imagejpeg($im_php, $directory.'/thumbs/'.$new_name);
+}
+
+
 
 
 
